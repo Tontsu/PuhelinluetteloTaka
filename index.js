@@ -16,27 +16,27 @@ app.use(bodyParser.json())
 app.use(morgan(':method :url :data :status :res[content-length] - :response-time ms'))
 
 persons = [
-      { name: 'Arto Hellas', number: '040-123456', id: 1 },
-      { name: 'Martti Tienari', number: '040-123456', id: 2 },
-      { name: 'Arto Järvinen', number: '040-123456', id: 3 },
-      { name: 'Lea Kutvonen', number: '040-123456', id: 4 }
-    ]
+  { name: 'Arto Hellas', number: '040-123456', id: 1 },
+  { name: 'Martti Tienari', number: '040-123456', id: 2 },
+  { name: 'Arto Järvinen', number: '040-123456', id: 3 },
+  { name: 'Lea Kutvonen', number: '040-123456', id: 4 }
+]
 
 app.get('/info', (req, res) => {
   date = new Date()
   Person
     .find({})
-      .then(persons => {
-        res.send('<p>puhelinluettelossa ' + persons.length + ' henkilön tiedot</p>' + date.toString())
-      })
+    .then(persons => {
+      res.send('<p>puhelinluettelossa ' + persons.length + ' henkilön tiedot</p>' + date.toString())
+    })
 })
 
 app.get('/api/persons', (req, res) => {
   Person
     .find({})
-      .then(persons => {
-        res.json(persons)
-      })
+    .then(persons => {
+      res.json(persons.map(Person.format))
+    })
 })
 
 app.get('/api/persons/:id', (req, res) => {
@@ -44,8 +44,9 @@ app.get('/api/persons/:id', (req, res) => {
   .findById(req.params.id)
   .then(person => {
     if (person) {
-      res.json(person)
-    } else {
+      res.json(Person.format(person))
+    }
+    else {
       res.status(404).end()
     }
   })
@@ -70,7 +71,7 @@ app.post('/api/persons', (req, res) => {
       person
       .save()
       .then(savedPerson => {
-        res.json(savedPerson)
+        res.json(Person.format(savedPerson))
       })
     }
   })
@@ -85,7 +86,7 @@ app.put('/api/persons/:id', (req, res) => {
   Person
     .findByIdAndUpdate(req.params.id, person, { new: true })
     .then(updatedPerson => {
-      res.json(updatedPerson)
+      res.json(Person.format(updatedPerson))
     })
     .catch(error => {
       console.log(error)

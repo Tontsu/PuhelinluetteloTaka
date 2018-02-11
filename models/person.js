@@ -13,4 +13,12 @@ const Person = mongoose.model('Person', {
   number: String
 })
 
+Person.format = function(person) {
+  return this.person = {
+    name: person.name,
+    number: person.number,
+    id: person._id
+  }
+}
+
 module.exports = Person
